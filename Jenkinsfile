@@ -8,13 +8,13 @@ pipeline {
     }
 
     stage('Docker build'){
-      step{
+      steps{
         docker.build('python-app')
       }
     }
 
     stage ('Docker push'){
-      step{
+      steps{
         docker.withRegistry('https://920055073134.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:python-app-ecr-credentials'){
         docker.image('python-app').push('latest')
         }
