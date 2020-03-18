@@ -7,6 +7,7 @@ Jenkins monitors GitHub for code changes and pipeline is triggred to build and p
 The Image is later deployed to EKS using service.json and controller.json for LoadBalancer and ReplicaController respectively.
 Cloudformation is used to bring up Infrastructure which has 1 VPC , 2 Private Subnets , 2 Public Subnets 1 EKS Cluster 3 Worker Nodes.
 All the worker nodes are deployed to Private subnet and controller is deployed to Public subnet.
+Deployment strategy followed is Rolling updates.
 
 # Application Configuration
 Application runs on port 80 and the LoadBalancer is configured to port 80.
