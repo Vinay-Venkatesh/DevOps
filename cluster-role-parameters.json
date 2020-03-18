@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey":"EKSRoleName",
+        "ParameterValue":"eks-roleName"
+    },
+    {
+        "ParameterKey":"NodeRoleName",
+        "ParameterValue":"node-roleName"
+    }
+]

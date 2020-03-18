@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "ClusterName",
+    "ParameterValue": "Python-WebApp"
+  },
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "WebApp"
+  },
+  {
+    "ParameterKey": "eksVersion",
+    "ParameterValue": "1.15.10"
+  }
+]

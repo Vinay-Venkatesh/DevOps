@@ -1,0 +1,217 @@
+Description:
+    This yml contains resources w.r.t EC2
+
+Parameters:
+    EnvironmentName:
+        Description: An environment name that will be prefixed to resource names
+        Type: String
+    LBType:
+        Description: Application | Network 
+        Type: String
+    LBSchema:
+        Description: internal | internet-facing
+        Type: String
+    LBName:
+        Description: Name of the Load Balancer
+        Type: String
+    ipaddrType:
+        Description: IpAddr Type ipv4 | ipv6
+        Type: String
+    TargetType:
+        Description: Target Type - Instance | Ip
+        Type: String
+    launchconfigname:
+        Description: ASG Launch Config Name
+        Type: String
+    targetgroupname:
+        Description: Target Group Name of load balancer
+        Type: String
+    myKeyPair:
+        Description: KeyPair for Ec2
+        Type: String
+    ProfileWithRolesForOurApp:
+        Description: Role Name
+        Type: String
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-0a887e401f7654935
+    us-east-2:
+      AMI: ami-02ccb28830b645a41
+Resources:
+  LoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId: 
+        Fn::ImportValue: 
+          Fn::Sub: "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0 
+      GroupName: "Sg-loadbalancer-WebApp"
+
+#Load Balancer Target Group
+  WebAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: 
+        Fn::Sub: "${TargetType}"
+      Protocol: 
+        Fn::Sub: "${protocol}"
+      VpcId: 
+        Fn::ImportValue:
+          Fn::Sub: "${EnvironmentName}-VPCID"
+      #Advanced Settings
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 2
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      #Name:
+      #  Fn::Sub: "${targetgroupname}"
+  
+#Load Balancer
+  WebAppLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      IpAddressType: 
+        Fn::Sub: "${ipaddrType}"
+      Name: 
+        Fn::Sub: "${LBName}"
+      Scheme: 
+        Fn::Sub: "${LBSchema}"
+      SecurityGroups:  # or !Ref: LoadBalancerSG
+        - Ref: LoadBalancerSG
+      Subnets: 
+        - Fn::ImportValue: 
+            Fn::Sub: "${EnvironmentName}-PUB1-SN"
+        - Fn::ImportValue: 
+            Fn::Sub: "${EnvironmentName}-PUB2-SN"
+      Tags: 
+        - Key: Name
+          Value: WebAppLoadBalacner
+      Type: 
+        Fn::Sub: "${LBType}"
+
+#ALB Listener
+  ALBListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: 
+            Ref: WebAppTargetGroup
+      LoadBalancerArn: 
+        Ref: WebAppLB
+      Port: '80'
+      Protocol: HTTP
+
+#Web-Server Security Group
+  WebServerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http,ssh ports
+      VpcId: 
+        Fn::ImportValue: 
+          Fn::Sub: "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId:
+            !GetAtt
+            - LoadBalancerSG
+            - GroupId
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0 
+      GroupName: "Sg-WebApp"
+  
+#AutoScaling group Launch Configuration
+  WebAppLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata: 
+      Comment: Install php and httpd
+      AWS::CloudFormation::Init:
+        config: 
+          packages: 
+            yum:
+              httpd: []
+              php: []
+          files: 
+            /var/www/html/index.php:
+              content: !Sub |
+                <?php print "Hello world!!"; ?>
+          services: 
+            sysvinit:
+              httpd:
+                enabled: true
+                ensureRunning: true
+    Properties:
+      ImageId: 
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      IamInstanceProfile: !Ref ProfileWithRolesForOurApp
+      UserData:
+        'Fn::Base64': 
+          !Sub |
+            #!/bin/bash -xe                        
+            # Ensure AWS CFN Bootstrap is the latest
+            yum install -y aws-cfn-bootstrap
+            # Install the files and packages from the metadata
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource WebAppLaunchConfig --region ${AWS::Region}
+      SecurityGroups:
+        - Ref: WebServerSG
+      #KeyName: !Ref myKeyPair
+      InstanceType: t3.small
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            VolumeSize: '10'
+            DeleteOnTermination: "true"
+      #LaunchConfigurationName: 
+      #  Fn::Sub: "${launchconfigname}"
+  
+  #AutoScaling group configuration
+  WebAppAutoScaling: 
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties: 
+      VPCZoneIdentifier:
+        Fn::Split:
+        - ","
+        - Fn::ImportValue:
+            Fn::Sub: "${EnvironmentName}-PRIV-NETS"
+      LaunchConfigurationName:
+        Ref: "WebAppLaunchConfig"
+      MinSize: "1"
+      MaxSize: "1"
+      TargetGroupARNs:
+        Fn::Split: [",",!Ref WebAppTargetGroup]
+      Tags:
+        - Key: Name
+          Value: WebAutoScaling
+          PropagateAtLaunch: True
+
+Outputs:
+  PublicDns:
+    Description: The Public DNS
+    Value: !Sub 'http://${WebAppLB.DNSName}'

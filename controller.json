@@ -1,0 +1,37 @@
+{
+   "kind":"ReplicationController",
+   "apiVersion":"v1",
+   "metadata":{
+      "name":"python-app",
+      "labels":{
+         "app":"python-app"
+      }
+   },
+   "spec":{
+      "replicas":3,
+      "selector":{
+         "app":"python-app"
+      },
+      "template":{
+         "metadata":{
+            "labels":{
+               "app":"python-app"
+            }
+         },
+         "spec":{
+            "containers":[
+               {
+                  "name":"python-app",
+                  "image":"920055073134.dkr.ecr.us-east-1.amazonaws.com/python-app:latest",
+                  "ports":[
+                     {
+                        "name":"http-server",
+                        "containerPort":80
+                     }
+                  ]
+               }
+            ]
+         }
+      }
+   }
+}

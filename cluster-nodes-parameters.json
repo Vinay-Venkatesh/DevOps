@@ -1,0 +1,47 @@
+[
+    {
+        "ParameterKey":"KeyName",
+        "ParameterValue":"virgina"
+    },
+    {
+        "ParameterKey":"NodeImageId",
+        "ParameterValue":"ami-0582e4c984a1e848a"
+    },
+    {
+        "ParameterKey":"NodeInstanceType",
+        "ParameterValue":"t3.medium"
+    },
+    {
+        "ParameterKey":"NodeAutoScalingGroupMinSize",
+        "ParameterValue":"1"
+    },
+    {
+        "ParameterKey":"NodeAutoScalingGroupMaxSize",
+        "ParameterValue":"3"
+    },
+    {
+        "ParameterKey":"NodeAutoScalingGroupDesiredCapacity",
+        "ParameterValue":"2"
+    },
+    {
+        "ParameterKey":"NodeVolumeSize",
+        "ParameterValue":"40"
+    },
+    {
+        "ParameterKey":"NodeGroupName",
+        "ParameterValue":"WebApp"
+    },
+    {
+        "ParameterKey":"EnvironmentName",
+        "ParameterValue":"WebApp"
+    },
+    {
+        "ParameterKey": "ClusterName",
+        "ParameterValue":"Python-WebApp"
+    },
+    {
+        "ParameterKey":"ClusterControlPlaneSecurityGroup",
+        "ParameterValue": "sg-03fec1ee0ba232506"
+    }
+
+]

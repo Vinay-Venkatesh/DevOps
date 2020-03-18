@@ -1,0 +1,75 @@
+Description: 
+    This yml contains resources w.r.t EKS Cluster
+Parameters:
+    ClusterName:
+        Description: Cluster Name
+        Type: String
+    EnvironmentName:
+        Description: Environment Name
+        Type: String
+    eksVersion:
+        Description: EKS Version
+        Type: String
+
+Resources:
+  WepApplicationClusterSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId: 
+        Fn::ImportValue: 
+          Fn::Sub: "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 10.0.0.0/16
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0 
+      GroupName: "Sg-WebApp-Cluster"
+  WebApplication:
+    Type: AWS::EKS::Cluster
+    Properties:
+      RoleArn:
+        Fn::ImportValue: "Cluster-RoleArn"
+      Version: 
+        Fn::Sub: "${eksVersion}"
+      Name:
+        Fn::Sub: "${ClusterName}"
+      ResourcesVpcConfig: 
+        SecurityGroupIds:
+          - Ref: WepApplicationClusterSG
+        SubnetIds:
+          - Fn::ImportValue: 
+              Fn::Sub: "${EnvironmentName}-PUB1-SN"
+          - Fn::ImportValue: 
+              Fn::Sub: "${EnvironmentName}-PUB2-SN"
+Outputs: 
+    ClusterName: 
+      Description: ClusterName
+      Value: 
+        Fn::Sub: ${ClusterName}
+      Export:
+        Name: !Sub ${EnvironmentName}-${ClusterName}
+
+    ClusterSecurityGroupId:
+      Description: Security Group Id
+      Value:
+        !Ref WepApplicationClusterSG
+      Export:
+        Name: !Sub ${EnvironmentName}-${ClusterName}-SgId

@@ -1,0 +1,42 @@
+[
+    {
+        "ParameterKey": "EnvironmentName",
+        "ParameterValue": "WebApp"
+    },
+    {
+        "ParameterKey": "LBType",
+        "ParameterValue": "application"
+    },
+    {
+        "ParameterKey": "LBSchema",
+        "ParameterValue": "internet-facing"
+    },
+    {
+        "ParameterKey": "LBName",
+        "ParameterValue": "FunActivity"
+    },
+    {
+        "ParameterKey": "ipaddrType",
+        "ParameterValue": "ipv4"
+    },
+    {
+        "ParameterKey": "TargetType",
+        "ParameterValue": "instance"
+    },
+    {
+        "ParameterKey": "launchconfigname",
+        "ParameterValue": "launch-config-webapplication"
+    },
+    {
+        "ParameterKey": "targetgroupname",
+        "ParameterValue": "tg-webapp-8080"
+    },
+    {
+        "ParameterKey": "myKeyPair",
+        "ParameterValue": "virginia-staging"
+    },
+    {
+        "ParameterKey": "ProfileWithRolesForOurApp",
+        "ParameterValue": "s3-accessor"
+    }
+]
