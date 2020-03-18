@@ -2,7 +2,6 @@ FROM python:3.7.3-stretch
 
 # Working Directory
 WORKDIR /app
-Test Failure
 # Copy source code to working directory
 COPY hello.py /app/
 COPY requirements.txt /app/
