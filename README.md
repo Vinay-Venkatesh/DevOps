@@ -7,7 +7,7 @@ This repository explains practical implementation of DevOps practice in an organ
 3. AWS EKS  - Container Orchestration
 4. AWS ECR  - Image Repository
 
-#Plugins Used:
+# Plugins Used:
 1. Blue Ocean Plugin
 2. AWS ECR Plugin
 3. Docker Pipeline Plugin
