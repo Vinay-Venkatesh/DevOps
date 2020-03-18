@@ -8,6 +8,9 @@ The Image is later deployed to EKS using service.json and controller.json for Lo
 Cloudformation is used to bring up Infrastructure which has 1 VPC , 2 Private Subnets , 2 Public Subnets 1 EKS Cluster 3 Worker Nodes.
 All the worker nodes are deployed to Private subnet and controller is deployed to Public subnet.
 
+# Application Configuration
+Application runs on port 80 and the LoadBalancer is configured to port 80.
+
 # Tools Used:
 1. GitHub   - Code Repository
 2. Jenkins - CI/CD
