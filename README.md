@@ -1,5 +1,5 @@
 # DevOps
-Infrastructure as a Code , Kubernetes , Docker with CI/CD Implementation for a python API.
+Infrastructure as a Code , Docker , Kubernetes with CI/CD Implementation for a python API.
 
 # Summary
 Its a python API which is deployed to eks with 3 replicaset.
