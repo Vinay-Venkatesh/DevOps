@@ -24,5 +24,17 @@ pipeline {
         }
       }
     }
+
+    stage ('Docker deploy controller'){
+      steps{
+        sh 'kubectl apply -f controller.json'
+      }
+    }
+
+    stage ('Docker deploy service'){
+      steps{
+        sh 'kubectl apply -f service.json'
+      }
+    }
   }
 }
