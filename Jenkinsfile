@@ -26,7 +26,7 @@ pipeline {
     }
     stage('Docker deploy'){
       steps {
-            sh 'kubectl apply -f controller.json --token 11871835b3cda17d6ec49466c15a2ce3c2 --server https://160371ABE9DB6F87DAC55937D2740CC5.gr7.us-east-1.eks.amazonaws.com'
+            sh 'kubectl apply -f controller.json --token 11871835b3cda17d6ec49466c15a2ce3c2'
         }
       }
     }
