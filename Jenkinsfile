@@ -26,10 +26,8 @@ pipeline {
     }
     stage('Docker deploy'){
       steps {
-         withKubeConfig([credentialsId: 'Vinay', serverUrl: 'https://160371ABE9DB6F87DAC55937D2740CC5.gr7.us-east-1.eks.amazonaws.com']) {
-          sh 'kubectl apply -f controller.json'
+            sh 'kubectl apply -f controller.json'
         }
       }
     }
-  }
 }
