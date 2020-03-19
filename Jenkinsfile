@@ -25,16 +25,10 @@ pipeline {
       }
     }
 
-    stage ('Docker deploy controller'){
-      steps{
+    stage('Apply Kubernetes files') {
+      withKubeConfig([credentialsId: 'Vinay', serverUrl: 'https://160371ABE9DB6F87DAC55937D2740CC5.gr7.us-east-1.eks.amazonaws.com']) {
         sh 'kubectl apply -f controller.json'
-      }
-    }
-
-    stage ('Docker deploy service'){
-      steps{
-        sh 'kubectl apply -f service.json'
+        }
       }
     }
   }
-}
