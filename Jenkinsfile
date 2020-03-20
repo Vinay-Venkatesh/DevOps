@@ -25,7 +25,7 @@ pipeline {
       }
     }
     stage('Docker deploy'){
-      steps {
+      dir('/home/ubuntu') {
             sh 'kubectl apply -f controller.json'
         }
       }
