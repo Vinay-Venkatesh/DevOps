@@ -26,7 +26,7 @@ pipeline {
     }
     stage('Docker deploy'){
       steps {
-            sh 'kubectl apply -f controller.json --token 11871835b3cda17d6ec49466c15a2ce3c2'
+            sh 'kubectl apply -f controller.json'
         }
       }
     }
