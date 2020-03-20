@@ -26,8 +26,8 @@ pipeline {
     }
     stage('Docker deploy'){
       steps {
-            sh 'sudo kubectl --kubeconfig /home/ubuntu/.kube/config apply -f controller.json'
-            sh 'sudo kubectl --kubeconfig /home/ubuntu/.kube/config apply -f service.json'
+            sh 'kubectl --kubeconfig /home/ubuntu/.kube/config apply -f controller.json'
+            sh 'kubectl --kubeconfig /home/ubuntu/.kube/config apply -f service.json'
         }
       }
     }
